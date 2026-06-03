@@ -41,21 +41,20 @@ public class GameScreen extends ScreenAdapter {
     private TextView livesTextView;
     private ButtonView pauseButton;
 
-    // UI паузы
+
     private ImageView fullBlackoutView;
     private TextView pauseTextView;
     private ButtonView homeButton;
     private ButtonView continueButton;
 
-    // UI конца игры
-    private TextView recordsTextView;
+   private TextView recordsTextView;
     private RecordsListView recordsListView;
     private ButtonView homeButton2;
 
-    // Для спавна
+
     private long nextSpawnTime;
 
-    // Для свайпов и линии
+
     private Vector2 swipeStart = null;
     private ArrayList<Vector2> swipePoints;
     private ShapeRenderer shapeRenderer;
@@ -144,7 +143,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void handleSliceSegment(Vector2 p1, Vector2 p2) {
-        // Фрукты
+
         Iterator<FruitObject> fruitIt = fruits.iterator();
         while (fruitIt.hasNext()) {
             FruitObject fruit = fruitIt.next();
@@ -155,8 +154,7 @@ public class GameScreen extends ScreenAdapter {
                 fruitIt.remove();
             }
         }
-        // Бомбы
-        Iterator<BombObject> bombIt = bombs.iterator();
+      Iterator<BombObject> bombIt = bombs.iterator();
         while (bombIt.hasNext()) {
             BombObject bomb = bombIt.next();
             if (!bomb.isExploded() && isLineIntersectingCircle(p1, p2, bomb.getX(), bomb.getY(), bomb.getWidth() / 2f)) {
@@ -263,7 +261,7 @@ public class GameScreen extends ScreenAdapter {
 
             float multiplier = gameSession.getSpeedMultiplier();
             float fruitSpeed = GameSettings.BASE_FRUIT_SPEED * multiplier;
-            float bombSpeed = GameSettings.BASE_BOMB_SPEED * multiplier * 0.8f; // бомбы чуть медленнее
+            float bombSpeed = GameSettings.BASE_BOMB_SPEED * multiplier * 0.8f; 
 
             boolean spawnBomb = Math.random() * 100 < gameSession.getCurrentBombChance();
             if (spawnBomb) {
@@ -275,7 +273,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void updateObjects() {
-        // Фрукты
+
         Iterator<FruitObject> fruitIt = fruits.iterator();
         while (fruitIt.hasNext()) {
             FruitObject fruit = fruitIt.next();
@@ -288,7 +286,7 @@ public class GameScreen extends ScreenAdapter {
                 fruitIt.remove();
             }
         }
-        // Бомбы
+
         Iterator<BombObject> bombIt = bombs.iterator();
         while (bombIt.hasNext()) {
             BombObject bomb = bombIt.next();
