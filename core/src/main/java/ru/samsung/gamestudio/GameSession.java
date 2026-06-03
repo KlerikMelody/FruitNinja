@@ -60,9 +60,6 @@ public class GameSession {
         MemoryManager.saveTableOfRecords(table);
     }
 
-    public void updateScore() {
-    }
-
     public int getScore() {
         return score;
     }
@@ -91,5 +88,31 @@ public class GameSession {
             state = GameState.PLAYING;
             sessionStartTime += TimeUtils.millis() - pauseStartTime;
         }
+    }
+
+
+    public float getSpeedMultiplier() {
+        int steps = score / 100;
+        float multiplier = 1f + steps * GameSettings.SPEED_INCREASE_PER_100_SCORE;
+        if (multiplier > GameSettings.MAX_SPEED_MULTIPLIER)
+            multiplier = GameSettings.MAX_SPEED_MULTIPLIER;
+        return multiplier;
+    }
+
+    public long getCurrentSpawnInterval() {
+        int steps = score / 100;
+        float interval = GameSettings.BASE_SPAWN_INTERVAL *
+            (1f - steps * GameSettings.SPAWN_INTERVAL_DECREASE_PER_100_SCORE);
+        if (interval < GameSettings.MIN_SPAWN_INTERVAL)
+            interval = GameSettings.MIN_SPAWN_INTERVAL;
+        return (long) interval;
+    }
+
+    public int getCurrentBombChance() {
+        int steps = score / 100;
+        int chance = GameSettings.BASE_BOMB_CHANCE + steps * 5; // +5% за 100 очков
+        if (chance > GameSettings.MAX_BOMB_CHANCE)
+            chance = GameSettings.MAX_BOMB_CHANCE;
+        return chance;
     }
 }
