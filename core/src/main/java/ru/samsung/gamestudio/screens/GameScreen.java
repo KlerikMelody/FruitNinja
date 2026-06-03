@@ -40,14 +40,22 @@ public class GameScreen extends ScreenAdapter {
     private TextView scoreTextView;
     private TextView livesTextView;
     private ButtonView pauseButton;
+
+    // UI паузы
     private ImageView fullBlackoutView;
     private TextView pauseTextView;
     private ButtonView homeButton;
     private ButtonView continueButton;
+
+    // UI конца игры
     private TextView recordsTextView;
     private RecordsListView recordsListView;
     private ButtonView homeButton2;
+
+    // Для спавна
     private long nextSpawnTime;
+
+    // Для свайпов и линии
     private Vector2 swipeStart = null;
     private ArrayList<Vector2> swipePoints;
     private ShapeRenderer shapeRenderer;
@@ -73,14 +81,12 @@ public class GameScreen extends ScreenAdapter {
 
         pauseButton = new ButtonView(605, 1200, 46, 54, GameResources.PAUSE_IMG_PATH);
 
-
         fullBlackoutView = new ImageView(0, 0, GameResources.BLACKOUT_FULL_IMG_PATH);
         pauseTextView = new TextView(myGdxGame.largeWhiteFont, 282, 842, "Pause");
         homeButton = new ButtonView(138, 695, 200, 70, myGdxGame.commonBlackFont,
             GameResources.BUTTON_SHORT_BG_IMG_PATH, "Home");
         continueButton = new ButtonView(393, 695, 200, 70, myGdxGame.commonBlackFont,
             GameResources.BUTTON_SHORT_BG_IMG_PATH, "Continue");
-
 
         recordsTextView = new TextView(myGdxGame.largeWhiteFont, 206, 842, "Last records");
         recordsListView = new RecordsListView(myGdxGame.commonWhiteFont, 690);
@@ -138,6 +144,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void handleSliceSegment(Vector2 p1, Vector2 p2) {
+        // Фрукты
         Iterator<FruitObject> fruitIt = fruits.iterator();
         while (fruitIt.hasNext()) {
             FruitObject fruit = fruitIt.next();
@@ -148,6 +155,7 @@ public class GameScreen extends ScreenAdapter {
                 fruitIt.remove();
             }
         }
+        // Бомбы
         Iterator<BombObject> bombIt = bombs.iterator();
         while (bombIt.hasNext()) {
             BombObject bomb = bombIt.next();
@@ -237,7 +245,7 @@ public class GameScreen extends ScreenAdapter {
 
         if (gameSession.isPlaying()) {
             spawnObjects();
-
+            // Обновление позиций объектов
             for (FruitObject f : fruits) f.update(delta);
             for (BombObject b : bombs) b.update(delta);
             updateObjects();
@@ -249,21 +257,25 @@ public class GameScreen extends ScreenAdapter {
 
     private void spawnObjects() {
         if (TimeUtils.millis() >= nextSpawnTime) {
-            nextSpawnTime = TimeUtils.millis() + GameSettings.SPAWN_INTERVAL;
+            nextSpawnTime = TimeUtils.millis() + gameSession.getCurrentSpawnInterval();
             int x = (int) (Math.random() * (GameSettings.SCREEN_WIDTH - 100)) + 50;
             int y = GameSettings.SCREEN_HEIGHT + 50; // сверху
 
-            boolean spawnBomb = Math.random() * 100 < GameSettings.BOMB_SPAWN_CHANCE;
+            float multiplier = gameSession.getSpeedMultiplier();
+            float fruitSpeed = GameSettings.BASE_FRUIT_SPEED * multiplier;
+            float bombSpeed = GameSettings.BASE_BOMB_SPEED * multiplier * 0.8f; // бомбы чуть медленнее
+
+            boolean spawnBomb = Math.random() * 100 < gameSession.getCurrentBombChance();
             if (spawnBomb) {
-                bombs.add(new BombObject(x, y));
+                bombs.add(new BombObject(x, y, bombSpeed));
             } else {
-                fruits.add(new FruitObject(x, y));
+                fruits.add(new FruitObject(x, y, fruitSpeed));
             }
         }
     }
 
     private void updateObjects() {
-
+        // Фрукты
         Iterator<FruitObject> fruitIt = fruits.iterator();
         while (fruitIt.hasNext()) {
             FruitObject fruit = fruitIt.next();
@@ -276,6 +288,7 @@ public class GameScreen extends ScreenAdapter {
                 fruitIt.remove();
             }
         }
+        // Бомбы
         Iterator<BombObject> bombIt = bombs.iterator();
         while (bombIt.hasNext()) {
             BombObject bomb = bombIt.next();
